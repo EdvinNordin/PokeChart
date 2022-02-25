@@ -1,8 +1,9 @@
 
 import pandas as pd
-from bokeh.models import Div, RangeSlider, Spinner
+from bokeh.layouts import layout
 from bokeh.plotting import figure, show
-from bokeh.models import Div, RangeSlider, Spinner
+from bokeh.models.widgets import Panel, Tabs
+
 dataset = pd.read_csv("pokedex_(Update_05.20).csv")
 hp = dataset["hp"]
 attack = dataset["attack"]
@@ -10,20 +11,36 @@ defense = dataset["defense"]
 sp_attack = dataset["sp_attack"]
 sp_defense = dataset["sp_defense"]
 speed = dataset["speed"]
+total = dataset["hp"]+dataset["attack"]+dataset["sp_attack"]+dataset["defense"]+dataset["sp_defense"]+dataset["speed"]
+print(total)
 
-spinner = Spinner(
-    title="Circle size",
-    low=0,
-    high=60,
-    step=5,
-    value=points.glyph.size,
-    width=200,
-)
-spinner.js_link("value", points.glyph, "size")
+php = figure(x_axis_label="total", y_axis_label="hp")
+php.circle(total, hp, legend_label="Objects", color="black", size=3)
+tab1 = Panel(child=php, title="hp")
 
-p = figure(title="PokéChart", x_axis_label="hp", y_axis_label="attack")
-p.circle(hp, attack, legend_label="Objects", color="black", size=3)
-show(p)
+patt = figure(x_axis_label="total", y_axis_label="attack")
+patt.circle(total, attack, legend_label="Objects", color="black", size=3)
+tab2 = Panel(child=patt, title="attack")
+
+pspa = figure(x_axis_label="total", y_axis_label="sp_attack")
+pspa.circle(total, sp_attack, legend_label="Objects", color="black", size=3)
+tab3 = Panel(child=pspa, title="sp_attack")
+
+pdef= figure(x_axis_label="total", y_axis_label="defense")
+pdef.circle(total, defense, legend_label="Objects", color="black", size=3)
+tab4 = Panel(child=pdef, title="defense")
+
+pspd = figure(x_axis_label="total", y_axis_label="sp_defense")
+pspd.circle(total, sp_defense, legend_label="Objects", color="black", size=3)
+tab5 = Panel(child=pspd, title="sp_defense")
+
+pspe = figure(x_axis_label="total", y_axis_label="speed")
+pspe.circle(total, speed, legend_label="Objects", color="black", size=3)
+tab6 = Panel(child=pspe, title="speed")
+
+tabs = Tabs(tabs=[tab1, tab2, tab3, tab4, tab5, tab6])
+# show result
+show(tabs)
 
 
 
