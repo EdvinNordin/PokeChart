@@ -1,61 +1,67 @@
-
 import pandas as pd
 from bokeh.layouts import layout
+from bokeh.models import HoverTool, ColumnDataSource
 from bokeh.plotting import figure, show
 from bokeh.models.widgets import Panel, Tabs
 
 dataset = pd.read_csv("pokedex_(Update_05.20).csv")
-hp = dataset["hp"]
+datasetCDS = ColumnDataSource(data=dataset)
+total = dataset["hp"] + dataset["attack"] + dataset["sp_attack"] + dataset["defense"] + dataset["sp_defense"] + dataset[
+    "speed"]
+
+#adding total as a new column in datasetCDS
+datasetCDS.data["total"]=total
+
+zsrc = ColumnDataSource(data={'image':[z]})
+"""hp = dataset["hp"]
 attack = dataset["attack"]
 defense = dataset["defense"]
 sp_attack = dataset["sp_attack"]
 sp_defense = dataset["sp_defense"]
 speed = dataset["speed"]
-total = dataset["hp"]+dataset["attack"]+dataset["sp_attack"]+dataset["defense"]+dataset["sp_defense"]+dataset["speed"]
-print(total)
+total = dataset["hp"] + dataset["attack"] + dataset["sp_attack"] + dataset["defense"] + dataset["sp_defense"] + dataset[
+    "speed"]
+dex = dataset["pokedex_number"]"""
 
-php = figure(x_axis_label="total", y_axis_label="hp")
-php.circle(total, hp, legend_label="Objects", color="black", size=3)
+
+TOOLTIPS = [
+    ("Pokedex", "@pokedex_number"),
+    ("hp", "@hp"),
+    ("attack", "@attack"),
+    ("sp_attack", "@sp_attack"),
+    ("defense", "@defense"),
+    ("sp_defense", "@sp_defense"),
+    ("speed", "@speed"),
+]
+
+
+php = figure(x_axis_label="total", y_axis_label="hp", tooltips=TOOLTIPS)
+php.circle(x="total", y="hp", source=datasetCDS, color="black", size=3)
 tab1 = Panel(child=php, title="hp")
 
-patt = figure(x_axis_label="total", y_axis_label="attack")
-patt.circle(total, attack, legend_label="Objects", color="black", size=3)
+patt = figure(x_axis_label="total", y_axis_label="attack", tooltips=TOOLTIPS)
+patt.circle(x="total", y="attack", source=datasetCDS, color="black", size=3)
 tab2 = Panel(child=patt, title="attack")
 
-pspa = figure(x_axis_label="total", y_axis_label="sp_attack")
-pspa.circle(total, sp_attack, legend_label="Objects", color="black", size=3)
+pspa = figure(x_axis_label="total", y_axis_label="sp_attack", tooltips=TOOLTIPS)
+pspa.circle(x="total", y="sp_attack", source=datasetCDS, color="black", size=3)
 tab3 = Panel(child=pspa, title="sp_attack")
 
-pdef= figure(x_axis_label="total", y_axis_label="defense")
-pdef.circle(total, defense, legend_label="Objects", color="black", size=3)
+pdef = figure(x_axis_label="total", y_axis_label="defense", tooltips=TOOLTIPS)
+pdef.circle(x="total", y="defense", source=datasetCDS, color="black", size=3)
 tab4 = Panel(child=pdef, title="defense")
 
-pspd = figure(x_axis_label="total", y_axis_label="sp_defense")
-pspd.circle(total, sp_defense, legend_label="Objects", color="black", size=3)
+pspd = figure(x_axis_label="total", y_axis_label="sp_defense", tooltips=TOOLTIPS)
+pspd.circle(x="total", y="sp_defense", source=datasetCDS, color="black", size=3)
 tab5 = Panel(child=pspd, title="sp_defense")
 
-pspe = figure(x_axis_label="total", y_axis_label="speed")
-pspe.circle(total, speed, legend_label="Objects", color="black", size=3)
+pspe = figure(x_axis_label="total", y_axis_label="speed", tooltips=TOOLTIPS)
+pspe.circle(x="total", y="speed", source=datasetCDS, color="black", size=3)
 tab6 = Panel(child=pspe, title="speed")
 
 tabs = Tabs(tabs=[tab1, tab2, tab3, tab4, tab5, tab6])
 # show result
 show(tabs)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 """
 ''' An interactivate categorized chart based on a movie dataset.
