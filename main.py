@@ -1,13 +1,10 @@
 import pandas as pd
-import json
-from PIL import Image
-import os
 
 from bokeh.embed import json_item
 from bokeh.layouts import layout, gridplot
 from bokeh.models import HoverTool, ColumnDataSource, CustomJSHover, CategoricalColorMapper
 from bokeh.plotting import figure, show
-from bokeh.models.widgets import Panel, Tabs
+from bokeh.models.widgets import Panel, Tabs, Select
 
 dataframe = pd.read_csv("pokedex_(Update_05.20).csv")
 datasetCDS = ColumnDataSource(data=dataframe)
@@ -25,45 +22,43 @@ dataframe['url'] = dataframe['url'].str.lower()
 
 datasetCDS.data["url"] = dataframe['url']
 #dataframe.to_excel("test1.xlsx")
+sizeCoeff = 3
 
-
-
-
-"""hp = dataset["hp"]
-attack = dataset["attack"]
-defense = dataset["defense"]
-sp_attack = dataset["sp_attack"]
-sp_defense = dataset["sp_defense"]
-speed = dataset["speed"]
-total = dataset["hp"] + dataset["attack"] + dataset["sp_attack"] + dataset["defense"] + dataset["sp_defense"] + dataset[
-    "speed"]
-dex = dataset["pokedex_number"]"""
-
+datasetCDS.data['hpSize'] = dataframe['hp']/sizeCoeff
+datasetCDS.data['attackSize'] = dataframe['attack']/sizeCoeff
+datasetCDS.data['sp_attackSize'] = dataframe['sp_attack']/sizeCoeff
+datasetCDS.data['defenseSize'] = dataframe['defense']/sizeCoeff
+datasetCDS.data['sp_defenseSize'] = dataframe['sp_defense']/sizeCoeff
+datasetCDS.data['speedSize'] = dataframe['speed']/sizeCoeff
 
 TOOLTIPS = """
-    <div>
-        <div>
-            <img src="@url" height="142" alt="@name" width="142"
-                style="float: left; margin: 0px 15px 15px 0px;"
+    <div style="width: 150px;>
+    
+        <div style="display: grid;">
+            <span style="font-size: 17px; font-weight: bold;">@name</span></div>
+        <div style="display: grid;"><span style="font-size: 14px; font-weight: bold;">Pokedex: @pokedex_number</span></div>
+        </div style="display: grid;">
+        <div style="position: bottom;">
+        
+        <div style="display: grid; margin-bottom: 2%;">
+            <img src="@url" height="142" alt="@name" width="100%"
+                style=" float:right; margin: 0px;"
                 border="1">
             </img>
         </div>
-        <div>
-            <span style="font-size: 17px; font-weight: bold;">@pokedex_number</span>
-            <span style="font-size: 15px; color: #966;">@name</span>
+        <div style="position: relative; text-align: center; font-size: 10px; vertical-align: bottom;">
+        <div style="width:13%;height:@hpSize;border:1px solid #000;display: inline-block;vertical-align: bottom; background-color: lightblue;">@hp</div>
+          <div style="width:13%;height:@attackSize;border:1px solid #000;display: inline-block;vertical-align: bottom; background-color: lightblue;">@attack</div>
+          <div style="width:13%;height:@sp_attackSize;border:1px solid #000;display: inline-block;vertical-align: bottom; background-color: lightblue;">@sp_attack</div>
+          <div style="width:13%;height:@defenseSize;border:1px solid #000;display: inline-block;vertical-align: bottom; background-color: lightblue;">@defense</div>
+          <div style="width:13%;height:@sp_defenseSize;border:1px solid #000;display: inline-block;vertical-align: bottom; background-color: lightblue;">@sp_defense</div>
+          <div style="width:13%;height:@speedSize;border:1px solid #000;display: inline-block;vertical-align: bottom; background-color: lightblue;">@speed</div>
         </div>
+        
+   
+        
     </div>
 """
-"""[
-    ("Pokedex", "@pokedex_number"),
-    ("hp", "@hp"),
-    ("attack", "@attack"),
-    ("sp_attack", "@sp_attack"),
-    ("defense", "@defense"),
-    ("sp_defense", "@sp_defense"),
-    ("speed", "@speed"),
-    ("total", "@total"),
-]"""
 
 color_mapper = CategoricalColorMapper(palette=["#EAA3DC", "#B8B8D0", "#765747", "#7636F6", "#745797", "#BF9F38", "#A5B82B",
                                                "#FF4980", "#AC8FEF", "#E9C26E", "#AF399D", "#D51C0D", "#7FDADA", "#55CA59",
@@ -74,7 +69,7 @@ color_mapper = CategoricalColorMapper(palette=["#EAA3DC", "#B8B8D0", "#765747", 
 
 
 php = figure(x_axis_label="total", y_axis_label="hp", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
-php.circle(x="total", y="hp", source=datasetCDS, color={'field': 'type_1', 'transform': color_mapper}, size=5)
+php.circle(x="total", y="hp", source=datasetCDS, name="mycircle", color={'field': 'type_1', 'transform': color_mapper}, size=5)
 tab1 = Panel(child=php, title="hp")
 
 patt = figure(x_axis_label="total", y_axis_label="attack", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
@@ -99,13 +94,15 @@ tab6 = Panel(child=pspe, title="speed")
 
 tabs = Tabs(tabs=[tab1, tab2, tab3, tab4, tab5, tab6])
 
-#bars = figure(x_axis_label="total", y_axis_label="attack", tooltips=TOOLTIPS)
-#bars.vbar(x="total", top="attack", source=datasetCDS, color="black", bottom=0, width=1)
+
 
 p=gridplot([[tabs]], toolbar_location=None)
 
 # show result
 show(p)
+
+
+
 
 """
 ''' An interactivate categorized chart based on a movie dataset.
