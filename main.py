@@ -95,30 +95,29 @@ def color(type):
 
 
 
-php = figure(x_axis_label="total", y_axis_label="hp", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
-php.circle(x="total", y="hp", source=datasetCDS,alpha=0.2, hover_alpha=1, color={'field': 'type_1', 'transform': color_mapper},
-           size=5)
-tab1 = Panel(child=php, title="hp")
+php = figure(x_axis_label="Total", y_axis_label="HP", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
+php.circle(x="total", y="hp", source=datasetCDS,alpha=0.2, hover_alpha=1, color={'field': 'type_1', 'transform': color_mapper},size=5)
+tab1 = Panel(child=php, title="HP")
 
-patt = figure(x_axis_label="Total", y_axis_label="attack", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
+patt = figure(x_axis_label="Total", y_axis_label="Attack", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
 patt.circle(x="total", y="attack", source=datasetCDS,alpha=0.2, hover_alpha=1, color={'field': 'type_1', 'transform': color_mapper}, size=5)
-tab2 = Panel(child=patt, title="attack")
+tab2 = Panel(child=patt, title="Attack")
 
-pspa = figure(x_axis_label="Total", y_axis_label="sp_attack", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
+pspa = figure(x_axis_label="Total", y_axis_label="Special Attack", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
 pspa.circle(x="total", y="sp_attack", source=datasetCDS,alpha=0.2, hover_alpha=1, color={'field': 'type_1', 'transform': color_mapper}, size=5)
-tab3 = Panel(child=pspa, title="sp_attack")
+tab3 = Panel(child=pspa, title="Special Attack")
 
-pdef = figure(x_axis_label="Total", y_axis_label="defense", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
+pdef = figure(x_axis_label="Total", y_axis_label="Defense", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
 pdef.circle(x="total", y="defense", source=datasetCDS,alpha=0.2, hover_alpha=1, color={'field': 'type_1', 'transform': color_mapper}, size=5)
-tab4 = Panel(child=pdef, title="defense")
+tab4 = Panel(child=pdef, title="Defense")
 
-pspd = figure(x_axis_label="Total", y_axis_label="sp_defense", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
+pspd = figure(x_axis_label="Total", y_axis_label="Special Defense", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
 pspd.circle(x="total", y="sp_defense", source=datasetCDS,alpha=0.2, hover_alpha=1, color={'field': 'type_1', 'transform': color_mapper}, size=5)
-tab5 = Panel(child=pspd, title="sp_defense")
+tab5 = Panel(child=pspd, title="Special Defense")
 
-pspe = figure(x_axis_label="Total", y_axis_label="speed", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
+pspe = figure(x_axis_label="Total", y_axis_label="Speed", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
 pspe.circle(x="total", y="speed", source=datasetCDS,alpha=0.2, hover_alpha=1, color={'field': 'type_1', 'transform': color_mapper}, size=5)
-tab6 = Panel(child=pspe, title="speed")
+tab6 = Panel(child=pspe, title="Speed")
 
 tabs = Tabs(tabs=[tab1, tab2, tab3, tab4, tab5, tab6])
 
