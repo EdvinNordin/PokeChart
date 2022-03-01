@@ -15,30 +15,25 @@ total = dataframe["hp"] + dataframe["attack"] + dataframe["sp_attack"] + datafra
 datasetCDS.data["total"] = total
 
 dataframe['formPN'] = dataframe['pokedex_number'].apply(lambda x: '{0:0>3}'.format(x))
-
+datasetCDS.data["formPN"]=dataframe['formPN']
 #creates the url to the images
 
-lastPDnum = 0
+lastPDnum = 1
 Fval = 2
+urlvar=[""]*len(datasetCDS.data["index"])
+datasetCDS.data["url"] = urlvar
 for x in range(len(datasetCDS.data["index"])):
 
-    if lastPDnum == datasetCDS.data['pokedex_number'][x]:
-        dataframe['url'] = 'https://assets.pokemon.com/assets/cms2/img/pokedex/detail/' + dataframe['formPN'].astype(str) + '_f2.png'
-        dataframe['url'] = dataframe['url'].str.replace(' ', '-')
-        dataframe['url'] = dataframe['url'].str.lower()
+    datasetCDS.data['url'][x] = 'https://assets.pokemon.com/assets/cms2/img/pokedex/detail/' + datasetCDS.data['formPN'][x] + '.png'
 
-        Fval = Fval + 1
-    else:
-        dataframe['url'] = 'https://assets.pokemon.com/assets/cms2/img/pokedex/detail/' + dataframe['formPN'].astype(str) + '.png'
-        dataframe['url'] = dataframe['url'].str.replace(' ', '-')
-        dataframe['url'] = dataframe['url'].str.lower()
-
-        lastPDnum = datasetCDS.data['pokedex_number'][x]
-        Fval = 2
+    if datasetCDS.data['pokedex_number'][x] == datasetCDS.data['pokedex_number'][x-1]:
+        datasetCDS.data['url'][x] = 'https://assets.pokemon.com/assets/cms2/img/pokedex/detail/' + datasetCDS.data['formPN'][x] + '_f2.png'
+    elif datasetCDS.data['pokedex_number'][x] == datasetCDS.data['pokedex_number'][x-2]:
+        datasetCDS.data['url'][x] = 'https://assets.pokemon.com/assets/cms2/img/pokedex/detail/' + datasetCDS.data['formPN'][x] + '_f3.png'
+    elif datasetCDS.data['pokedex_number'][x] == datasetCDS.data['pokedex_number'][x-3]:
+        datasetCDS.data['url'][x] = 'https://assets.pokemon.com/assets/cms2/img/pokedex/detail/' + datasetCDS.data['formPN'][x] + '_f4.png'
 
 
-
-datasetCDS.data["url"] = dataframe['url']
 #dataframe.to_excel("test1.xlsx")
 sizeCoeff = 2
 
@@ -144,8 +139,7 @@ datasetCDS.data['mult'] = dataframe['mult']
 
 datasetCDS.data['color'] = colorRange
 
-lineFig.multi_line(xs="names", ys="mult", source=datasetCDS, color="color", alpha=0.1,hover_alpha=1)
-
+lineFig.multi_line("names", "mult", source=datasetCDS, color="color", alpha=0.1,hover_alpha=1)
 p = gridplot([[tabs, lineFig]], toolbar_location=None)
 
 # show result
