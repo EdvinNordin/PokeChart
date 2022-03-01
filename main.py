@@ -28,9 +28,9 @@ for x in range(len(datasetCDS.data["index"])):
 
     if datasetCDS.data['pokedex_number'][x] == datasetCDS.data['pokedex_number'][x-1]:
         datasetCDS.data['url'][x] = 'https://assets.pokemon.com/assets/cms2/img/pokedex/detail/' + datasetCDS.data['formPN'][x] + '_f2.png'
-    elif datasetCDS.data['pokedex_number'][x] == datasetCDS.data['pokedex_number'][x-2]:
+    if datasetCDS.data['pokedex_number'][x] == datasetCDS.data['pokedex_number'][x-2]:
         datasetCDS.data['url'][x] = 'https://assets.pokemon.com/assets/cms2/img/pokedex/detail/' + datasetCDS.data['formPN'][x] + '_f3.png'
-    elif datasetCDS.data['pokedex_number'][x] == datasetCDS.data['pokedex_number'][x-3]:
+    if datasetCDS.data['pokedex_number'][x] == datasetCDS.data['pokedex_number'][x-3]:
         datasetCDS.data['url'][x] = 'https://assets.pokemon.com/assets/cms2/img/pokedex/detail/' + datasetCDS.data['formPN'][x] + '_f4.png'
 
 
