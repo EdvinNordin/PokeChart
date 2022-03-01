@@ -16,13 +16,30 @@ datasetCDS.data["total"] = total
 
 dataframe['formPN'] = dataframe['pokedex_number'].apply(lambda x: '{0:0>3}'.format(x))
 #creates the url to the images
-dataframe['url'] = 'https://assets.pokemon.com/assets/cms2/img/pokedex/detail/' + dataframe['formPN'].astype(str) + '.png'
-dataframe['url'] = dataframe['url'].str.replace(' ', '-')
-dataframe['url'] = dataframe['url'].str.lower()
+
+lastPDnum = 0
+Fval = 2
+for x in range(len(datasetCDS.data["index"])):
+
+    if lastPDnum == datasetCDS.data['pokedex_number'][x]:
+        dataframe['url'] = 'https://assets.pokemon.com/assets/cms2/img/pokedex/detail/' + dataframe['formPN'].astype(str) + '_f2.png'
+        dataframe['url'] = dataframe['url'].str.replace(' ', '-')
+        dataframe['url'] = dataframe['url'].str.lower()
+
+        Fval = Fval + 1
+    else:
+        dataframe['url'] = 'https://assets.pokemon.com/assets/cms2/img/pokedex/detail/' + dataframe['formPN'].astype(str) + '.png'
+        dataframe['url'] = dataframe['url'].str.replace(' ', '-')
+        dataframe['url'] = dataframe['url'].str.lower()
+
+        lastPDnum = datasetCDS.data['pokedex_number'][x]
+        Fval = 2
+
+
 
 datasetCDS.data["url"] = dataframe['url']
 #dataframe.to_excel("test1.xlsx")
-sizeCoeff = 3
+sizeCoeff = 2
 
 datasetCDS.data['hpSize'] = dataframe['hp']/sizeCoeff
 datasetCDS.data['attackSize'] = dataframe['attack']/sizeCoeff
@@ -36,23 +53,26 @@ TOOLTIPS = """
     
         <div style="display: grid;">
             <span style="font-size: 17px; font-weight: bold;">@name</span></div>
-        <div style="display: grid;"><span style="font-size: 14px; font-weight: bold;">Pokedex: @pokedex_number</span></div>
+        <div style="display: grid;"><span style="font-size: 14px; font-weight: bold;">Pokédex: @pokedex_number</span></div>
         </div style="display: grid;">
         <div style="position: bottom;">
         
         <div style="display: grid; margin-bottom: 2%;">
-            <img src="@url" height="142" alt="@name" width="100%"
+            <img src="@url" height="100%" alt="@name" width="100%"
                 style=" float:right; margin: 0px;"
                 border="1">
             </img>
         </div>
-        <div style="position: relative; text-align: center; font-size: 10px; vertical-align: bottom;">
-        <div style="width:13%;height:@hpSize;border:1px solid #000;display: inline-block;vertical-align: bottom; background-color: lightblue;">@hp</div>
-          <div style="width:13%;height:@attackSize;border:1px solid #000;display: inline-block;vertical-align: bottom; background-color: lightblue;">@attack</div>
-          <div style="width:13%;height:@sp_attackSize;border:1px solid #000;display: inline-block;vertical-align: bottom; background-color: lightblue;">@sp_attack</div>
-          <div style="width:13%;height:@defenseSize;border:1px solid #000;display: inline-block;vertical-align: bottom; background-color: lightblue;">@defense</div>
-          <div style="width:13%;height:@sp_defenseSize;border:1px solid #000;display: inline-block;vertical-align: bottom; background-color: lightblue;">@sp_defense</div>
-          <div style="width:13%;height:@speedSize;border:1px solid #000;display: inline-block;vertical-align: bottom; background-color: lightblue;">@speed</div>
+        <div style="position: relative; text-align: center; font-size: 10px; vertical-align: bottom; ">
+        
+        
+          <div style="display: inline-block;vertical-align: bottom;">@hp         <div style="width:30px;height:@hpSize;        border:1px solid #000;background-color: lightblue;"></div>HP</div>
+          <div style="display: inline-block;vertical-align: bottom;">@attack     <div style="width:30px;height:@attackSize;    border:1px solid #000;background-color: lightblue;"></div>Atk</div>
+          <div style="display: inline-block;vertical-align: bottom;">@sp_attack  <div style="width:30px;height:@sp_attackSize; border:1px solid #000;background-color: lightblue;"></div>Sp.Atk</div>
+          <div style="display: inline-block;vertical-align: bottom;">@defense    <div style="width:30px;height:@defenseSize;   border:1px solid #000;background-color: lightblue;"></div>Def</div>
+          <div style="display: inline-block;vertical-align: bottom;">@sp_defense <div style="width:30px;height:@sp_defenseSize;border:1px solid #000;background-color: lightblue;"></div>Sp.Def</div>
+          <div style="display: inline-block;vertical-align: bottom;">@speed      <div style="width:30px;height:@speedSize;     border:1px solid #000;background-color: lightblue;"></div>Spe</div>
+
         </div>
         
    
@@ -68,29 +88,29 @@ color_mapper = CategoricalColorMapper(palette=["#EAA3DC", "#B8B8D0", "#765747", 
                                                "Water", "Fire", "Normal"])
 
 
-php = figure(x_axis_label="total", y_axis_label="hp", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
+php = figure(x_axis_label="Total", y_axis_label="HP", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
 php.circle(x="total", y="hp", source=datasetCDS, name="mycircle", color={'field': 'type_1', 'transform': color_mapper}, size=5)
-tab1 = Panel(child=php, title="hp")
+tab1 = Panel(child=php, title="HP")
 
-patt = figure(x_axis_label="total", y_axis_label="attack", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
+patt = figure(x_axis_label="Total", y_axis_label="Attack", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
 patt.circle(x="total", y="attack", source=datasetCDS, color={'field': 'type_1', 'transform': color_mapper}, size=5)
-tab2 = Panel(child=patt, title="attack")
+tab2 = Panel(child=patt, title="Attack")
 
-pspa = figure(x_axis_label="total", y_axis_label="sp_attack", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
+pspa = figure(x_axis_label="Total", y_axis_label="Special Attack", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
 pspa.circle(x="total", y="sp_attack", source=datasetCDS, color={'field': 'type_1', 'transform': color_mapper}, size=5)
-tab3 = Panel(child=pspa, title="sp_attack")
+tab3 = Panel(child=pspa, title="Special Attack")
 
-pdef = figure(x_axis_label="total", y_axis_label="defense", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
+pdef = figure(x_axis_label="Total", y_axis_label="Defense", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
 pdef.circle(x="total", y="defense", source=datasetCDS, color={'field': 'type_1', 'transform': color_mapper}, size=5)
-tab4 = Panel(child=pdef, title="defense")
+tab4 = Panel(child=pdef, title="Defense")
 
-pspd = figure(x_axis_label="total", y_axis_label="sp_defense", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
+pspd = figure(x_axis_label="Total", y_axis_label="Special Defense", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
 pspd.circle(x="total", y="sp_defense", source=datasetCDS, color={'field': 'type_1', 'transform': color_mapper}, size=5)
-tab5 = Panel(child=pspd, title="sp_defense")
+tab5 = Panel(child=pspd, title="Special Defense")
 
-pspe = figure(x_axis_label="total", y_axis_label="speed", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
+pspe = figure(x_axis_label="Total", y_axis_label="Speed", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
 pspe.circle(x="total", y="speed", source=datasetCDS, color={'field': 'type_1', 'transform': color_mapper}, size=5)
-tab6 = Panel(child=pspe, title="speed")
+tab6 = Panel(child=pspe, title="Speed")
 
 tabs = Tabs(tabs=[tab1, tab2, tab3, tab4, tab5, tab6])
 
