@@ -83,7 +83,7 @@ datasetCDS.data['speedSize'] = dataframe['speed'] / sizeCoeff
 
 # HTML and CSS to the hovering function
 TOOLTIPS = """
-    <div style="width: 150px;">
+    <div style="width: 100px;">
         <div style="display: grid;">
             <span style="font-size: 17px; font-weight: bold;">@name</span></div>
             <div style="display: grid;"><span style="font-size: 14px; font-weight: bold;">Pokédex: @pokedex_number</span></div>
@@ -327,6 +327,28 @@ def Normal(in_active):
     else:
         typeList[17] = ""
 
+statusList = [""]*4
+def isNormal(in_active):
+    if in_active:
+        statusList[0] = "Normal"
+    else:
+        statusList[0] = ""
+def isSub(in_active):
+    if in_active:
+        statusList[1] = "Sub Legendary"
+    else:
+        statusList[1] = ""
+def isLegend(in_active):
+    if in_active:
+        statusList[2] = "Legendary"
+    else:
+        statusList[2] = ""
+def isMyth(in_active):
+    if in_active:
+        statusList[3] = "Mythical"
+    else:
+        statusList[3] = ""
+
 
 gen_list = [stuff_0,stuff_1,stuff_2,stuff_3,stuff_4,stuff_5,stuff_6,stuff_7]
 #https://stackoverflow.com/questions/46899348/bokeh-how-to-loop-through-checkboxbuttongroup?rq=1
@@ -340,13 +362,30 @@ def do_stuff(attr, old, new):
     last_clicked_button_stuff = gen_list[last_clicked_ID]
     in_active = last_clicked_ID in new
     last_clicked_button_stuff(in_active)
+
     for i in range(len(datasetCDS.data["index"])):
-        if datasetCDS.data['generation'][i] in genList and (datasetCDS.data['type_1'][i] in typeList or datasetCDS.data['type_2'][i] in typeList):
+        #1
+        if datasetCDS.data['generation'][i] in genList and (datasetCDS.data['type_1'][i] in typeList  or datasetCDS.data['type_2'][i] in typeList) and datasetCDS.data['status'][i] in statusList:
             booleans[i] = True
-        elif genList == [0]*8 and (datasetCDS.data['type_1'][i] in typeList or datasetCDS.data['type_2'][i] in typeList):
+        #2
+        elif genList == [0]*8 and (datasetCDS.data['type_1'][i] in typeList or datasetCDS.data['type_2'][i] in typeList) and datasetCDS.data['status'][i] in statusList:
             booleans[i] = True
-        elif typeList == [""]*17 and datasetCDS.data['generation'][i] in genList:
+        #3
+        elif datasetCDS.data['generation'][i] in genList and typeList == [""]*17 and datasetCDS.data['status'][i] in statusList:
             booleans[i] = True
+        #4
+        elif datasetCDS.data['generation'][i] in genList and (datasetCDS.data['type_1'][i] in typeList or datasetCDS.data['type_2'][i] in typeList) and statusList == [""]*4:
+            booleans[i] = True
+        #5
+        elif genList == [0]*8 and typeList == [""]*17  and datasetCDS.data['status'][i] in statusList:
+            booleans[i] = True
+        #6
+        elif genList == [0]*8  and (datasetCDS.data['type_1'][i] in typeList or datasetCDS.data['type_2'][i] in typeList) and statusList == [""]*4:
+            booleans[i] = True
+        #7
+        elif datasetCDS.data['generation'][i] in genList and typeList == [""]*17 and statusList == [""]*4:
+            booleans[i] = True
+        #8
         else:
             booleans[i] = False
 
@@ -378,15 +417,31 @@ def do_stuff1(attr, old, new):
     last_clicked_button_stuff(in_active)
 
     for i in range(len(datasetCDS.data["index"])):
-        if datasetCDS.data['generation'][i] in genList and (datasetCDS.data['type_1'][i] in typeList or datasetCDS.data['type_2'][i] in typeList):
+        #1
+        if datasetCDS.data['generation'][i] in genList and (datasetCDS.data['type_1'][i] in typeList  or datasetCDS.data['type_2'][i] in typeList) and datasetCDS.data['status'][i] in statusList:
             booleans[i] = True
-        elif genList == [0]*8 and (datasetCDS.data['type_1'][i] in typeList or datasetCDS.data['type_2'][i] in typeList):
+        #2
+        elif genList == [0]*8 and (datasetCDS.data['type_1'][i] in typeList or datasetCDS.data['type_2'][i] in typeList) and datasetCDS.data['status'][i] in statusList:
             booleans[i] = True
-        elif typeList == [""]*17 and datasetCDS.data['generation'][i] in genList:
+        #3
+        elif datasetCDS.data['generation'][i] in genList and typeList == [""]*17 and datasetCDS.data['status'][i] in statusList:
             booleans[i] = True
+        #4
+        elif datasetCDS.data['generation'][i] in genList and (datasetCDS.data['type_1'][i] in typeList or datasetCDS.data['type_2'][i] in typeList) and statusList == [""]*4:
+            booleans[i] = True
+        #5
+        elif genList == [0]*8 and typeList == [""]*17  and datasetCDS.data['status'][i] in statusList:
+            booleans[i] = True
+        #6
+        elif genList == [0]*8  and (datasetCDS.data['type_1'][i] in typeList or datasetCDS.data['type_2'][i] in typeList) and statusList == [""]*4:
+            booleans[i] = True
+        #7
+        elif datasetCDS.data['generation'][i] in genList and typeList == [""]*17 and statusList == [""]*4:
+            booleans[i] = True
+        #8
         else:
             booleans[i] = False
-    print(typeList)
+
     php.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
     patt.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
     pspa.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
@@ -402,7 +457,59 @@ TYPES = ["Fairy", "Steel", "Dark", "Dragon", "Ghost", "Rock", "Bug", "Psychic",
 
 types = CheckboxGroup(labels=TYPES, active=[])
 types.on_change('active', do_stuff1)
-options = column(gens, types)
+
+status_list = [isNormal,isSub,isLegend,isMyth]
+#https://stackoverflow.com/questions/46899348/bokeh-how-to-loop-through-checkboxbuttongroup?rq=1
+
+def do_stuff2(attr, old, new):
+    #print(attr, old, new)
+    last_clicked_ID = list(set(old) ^ set(new))[0]  # [0] since there will always be just one different element at a time
+    last_clicked_button_stuff = status_list[last_clicked_ID]
+    in_active = last_clicked_ID in new
+    last_clicked_button_stuff(in_active)
+
+    for i in range(len(datasetCDS.data["index"])):
+        #1
+        if datasetCDS.data['generation'][i] in genList and (datasetCDS.data['type_1'][i] in typeList  or datasetCDS.data['type_2'][i] in typeList) and datasetCDS.data['status'][i] in statusList:
+            booleans[i] = True
+        #2
+        elif genList == [0]*8 and (datasetCDS.data['type_1'][i] in typeList or datasetCDS.data['type_2'][i] in typeList) and datasetCDS.data['status'][i] in statusList:
+            booleans[i] = True
+        #3
+        elif datasetCDS.data['generation'][i] in genList and typeList == [""]*17 and datasetCDS.data['status'][i] in statusList:
+            booleans[i] = True
+        #4
+        elif datasetCDS.data['generation'][i] in genList and (datasetCDS.data['type_1'][i] in typeList or datasetCDS.data['type_2'][i] in typeList) and statusList == [""]*4:
+            booleans[i] = True
+        #5
+        elif genList == [0]*8 and typeList == [""]*17 and datasetCDS.data['status'][i] in statusList:
+            booleans[i] = True
+        #6
+        elif genList == [0]*8  and (datasetCDS.data['type_1'][i] in typeList or datasetCDS.data['type_2'][i] in typeList) and statusList == [""]*4:
+            booleans[i] = True
+        #7
+        elif datasetCDS.data['generation'][i] in genList and typeList == [""]*17 and statusList == [""]*4:
+            booleans[i] = True
+        #8
+        else:
+            booleans[i] = False
+
+    php.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
+    patt.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
+    pspa.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
+    pdef.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
+    pspd.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
+    pspe.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
+    lineFig.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
+
+
+STATUS = ["Normal", "Sub Legendary", "Legendary", "Mythical"]
+
+status = CheckboxButtonGroup(labels=STATUS, active=[])
+status.on_change('active', do_stuff2)
+
+
+options = column(gens, types, status)
 layout = row(options, gp)
 # dataframe.to_excel("test.xlsx")
 curdoc().add_root(layout)
