@@ -455,7 +455,7 @@ TYPES = ["Fairy", "Steel", "Dark", "Dragon", "Ghost", "Rock", "Bug", "Psychic",
          "Flying", "Ground", "Poison", "Fighting", "Ice", "Grass", "Electric",
          "Water", "Fire", "Normal"]
 
-types = CheckboxGroup(labels=TYPES, active=[])
+types = CheckboxButtonGroup(labels=TYPES, active=[])
 types.on_change('active', do_stuff1)
 
 status_list = [isNormal,isSub,isLegend,isMyth]
@@ -505,12 +505,11 @@ def do_stuff2(attr, old, new):
 
 STATUS = ["Normal", "Sub Legendary", "Legendary", "Mythical"]
 
-status = CheckboxButtonGroup(labels=STATUS, active=[])
+status = CheckboxButtonGroup(labels=STATUS, active=[], width=200)
 status.on_change('active', do_stuff2)
-
-
-options = column(gens, types, status)
-layout = row(options, gp)
+lower = row(gens,status, width=500)
+options = column(types,lower)
+layout = column(gp,options)
 # dataframe.to_excel("test.xlsx")
 curdoc().add_root(layout)
-#show(layout)
+show(layout)
