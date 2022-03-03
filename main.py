@@ -2,11 +2,20 @@
 import pandas as pd
 
 # Imports bokeh
+from tornado.ioloop import IOLoop
+
+from bokeh.server.server import Server
+from bokeh.application import Application
+from bokeh.application.handlers.function import FunctionHandler
+from bokeh import events
+from bokeh.io import curdoc
 from bokeh.embed import json_item
-from bokeh.layouts import layout, gridplot
-from bokeh.models import HoverTool, ColumnDataSource, CustomJSHover, CategoricalColorMapper
+from bokeh.layouts import layout, gridplot, row, widgetbox, column, grid
+from bokeh.models import CustomJS, HoverTool, ColumnDataSource, CategoricalColorMapper, Slider, CheckboxButtonGroup, \
+    CDSView, GroupFilter, IndexFilter, BooleanFilter, CheckboxGroup
 from bokeh.plotting import figure, show
-from bokeh.models.widgets import Panel, Tabs, Select
+from bokeh.models.widgets import Panel, Tabs, Select, Button, RadioButtonGroup
+from bokeh.events import ButtonClick
 
 # Load in database with pandas
 dataframe = pd.read_csv("pokedex_(Update_05.20).csv")
@@ -23,24 +32,48 @@ datasetCDS.data["total"] = total
 # Stores Pokédex number as "001" instead of "1" in formPN
 dataframe['formPN'] = dataframe['pokedex_number'].apply(lambda x: '{0:0>3}'.format(x))
 datasetCDS.data["formPN"] = dataframe['formPN']
+datasetCDS.data["gen"] = dataframe['name']
+for x in range(len(datasetCDS.data["index"])):
+    datasetCDS.data["gen"][x] = str(datasetCDS.data["generation"][x])
+
 
 # Creates the url to the images
-urlvar = [""]*len(datasetCDS.data["index"])
+
+def image(url):
+    request = urllib.request.Request(url)
+    request.get_method = lambda: 'HEAD'
+
+    try:
+        urllib.request.urlopen(request)
+        return True
+    except urllib.request.HTTPError:
+        return False
+
+
+urlvar = [""] * len(datasetCDS.data["index"])
 datasetCDS.data["url"] = urlvar
 for x in range(len(datasetCDS.data["index"])):
 
-    datasetCDS.data['url'][x] = 'https://assets.pokemon.com/assets/cms2/img/pokedex/detail/' + datasetCDS.data['formPN'][x] + '.png'
+    datasetCDS.data['url'][x] = 'https://assets.pokemon.com/assets/cms2/img/pokedex/detail/' + \
+                                datasetCDS.data['formPN'][x] + '.png'
 
-    if datasetCDS.data['pokedex_number'][x] == datasetCDS.data['pokedex_number'][x-1]:
-        datasetCDS.data['url'][x] = 'https://assets.pokemon.com/assets/cms2/img/pokedex/detail/' + datasetCDS.data['formPN'][x] + '_f2.png'
-    if datasetCDS.data['pokedex_number'][x] == datasetCDS.data['pokedex_number'][x-2]:
-        datasetCDS.data['url'][x] = 'https://assets.pokemon.com/assets/cms2/img/pokedex/detail/' + datasetCDS.data['formPN'][x] + '_f3.png'
-    if datasetCDS.data['pokedex_number'][x] == datasetCDS.data['pokedex_number'][x-3]:
-        datasetCDS.data['url'][x] = 'https://assets.pokemon.com/assets/cms2/img/pokedex/detail/' + datasetCDS.data['formPN'][x] + '_f4.png'
+    if datasetCDS.data['pokedex_number'][x] == datasetCDS.data['pokedex_number'][x - 1]:
+        url = 'https://assets.pokemon.com/assets/cms2/img/pokedex/detail/' + datasetCDS.data['formPN'][x] + '_f2.png'
+        # if image(url):
+        datasetCDS.data['url'][x] = url
+
+    if datasetCDS.data['pokedex_number'][x] == datasetCDS.data['pokedex_number'][x - 2]:
+        url = 'https://assets.pokemon.com/assets/cms2/img/pokedex/detail/' + datasetCDS.data['formPN'][x] + '_f3.png'
+        # if image(url):
+        datasetCDS.data['url'][x] = url
+
+    if datasetCDS.data['pokedex_number'][x] == datasetCDS.data['pokedex_number'][x - 3]:
+        url = 'https://assets.pokemon.com/assets/cms2/img/pokedex/detail/' + datasetCDS.data['formPN'][x] + '_f4.png'
+        # if image(url):
+        datasetCDS.data['url'][x] = url
 
 # Reads the data from each stat from the database and scales them to a coefficent
 sizeCoeff = 2
-# dataframe.to_excel("test1.xlsx")
 datasetCDS.data['hpSize'] = dataframe['hp'] / sizeCoeff
 datasetCDS.data['attackSize'] = dataframe['attack'] / sizeCoeff
 datasetCDS.data['sp_attackSize'] = dataframe['sp_attack'] / sizeCoeff
@@ -50,12 +83,11 @@ datasetCDS.data['speedSize'] = dataframe['speed'] / sizeCoeff
 
 # HTML and CSS to the hovering function
 TOOLTIPS = """
-    <div style="width: 150px;>
+    <div style="width: 150px;">
         <div style="display: grid;">
             <span style="font-size: 17px; font-weight: bold;">@name</span></div>
-        <div style="display: grid;"><span style="font-size: 14px; font-weight: bold;">Pokédex: @pokedex_number</span></div>
+            <div style="display: grid;"><span style="font-size: 14px; font-weight: bold;">Pokédex: @pokedex_number</span></div>
         </div style="display: grid;">
-        <div style="position: bottom;">
 
         <div style="display: grid; margin-bottom: 2%;">
             <img src="@url" height="100%" alt="@name" width="100%"
@@ -63,7 +95,7 @@ TOOLTIPS = """
                 border="1">
             </img>
         </div>
-        <div style="position: relative; text-align: center; font-size: 10px; vertical-align: bottom; ">
+        <div id="" style="position: relative; text-align: center; font-size: 10px; vertical-align: bottom; ">
         
           <div style="display: inline-block;vertical-align: bottom;">@hp         <div style="width:30px;height:@hpSize;        border:1px solid #000;background-color: lightblue;"></div>HP</div>
           <div style="display: inline-block;vertical-align: bottom;">@attack     <div style="width:30px;height:@attackSize;    border:1px solid #000;background-color: lightblue;"></div>Atk</div>
@@ -93,49 +125,58 @@ def color(type):
             return colors[j]
 
 
+
+
+view = CDSView(source=datasetCDS, filters=[])
+
 # Code for the scatter plot, labels and tabs
 php = figure(x_axis_label="Total", y_axis_label="HP", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
-php.circle(x="total", y="hp", source=datasetCDS,alpha=0.2, hover_alpha=1, color={'field': 'type_1', 'transform': color_mapper},size=5)
+php.circle(x="total", y="hp", source=datasetCDS, alpha=0.2, hover_alpha=1,
+           color={'field': 'type_1', 'transform': color_mapper}, size=5, name="circle", view=view)
 tab1 = Panel(child=php, title="HP")
 
 patt = figure(x_axis_label="Total", y_axis_label="Attack", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
-patt.circle(x="total", y="attack", source=datasetCDS, alpha=0.2, hover_alpha=1, color={'field': 'type_1', 'transform': color_mapper}, size=5)
+patt.circle(x="total", y="attack", source=datasetCDS, alpha=0.2, hover_alpha=1,
+            color={'field': 'type_1', 'transform': color_mapper}, size=5, name="circle", view=view)
 tab2 = Panel(child=patt, title="Attack")
 
 pspa = figure(x_axis_label="Total", y_axis_label="Special Attack", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
-pspa.circle(x="total", y="sp_attack", source=datasetCDS, alpha=0.2, hover_alpha=1, color={'field': 'type_1', 'transform': color_mapper}, size=5)
+pspa.circle(x="total", y="sp_attack", source=datasetCDS, alpha=0.2, hover_alpha=1,
+            color={'field': 'type_1', 'transform': color_mapper}, size=5, name="circle", view=view)
 tab3 = Panel(child=pspa, title="Special Attack")
 
 pdef = figure(x_axis_label="Total", y_axis_label="Defense", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
-pdef.circle(x="total", y="defense", source=datasetCDS, alpha=0.2, hover_alpha=1, color={'field': 'type_1', 'transform': color_mapper}, size=5)
+pdef.circle(x="total", y="defense", source=datasetCDS, alpha=0.2, hover_alpha=1,
+            color={'field': 'type_1', 'transform': color_mapper}, size=5, name="circle", view=view)
 tab4 = Panel(child=pdef, title="Defense")
 
 pspd = figure(x_axis_label="Total", y_axis_label="Special Defense", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
-pspd.circle(x="total", y="sp_defense", source=datasetCDS, alpha=0.2, hover_alpha=1, color={'field': 'type_1', 'transform': color_mapper}, size=5)
+pspd.circle(x="total", y="sp_defense", source=datasetCDS, alpha=0.2, hover_alpha=1,
+            color={'field': 'type_1', 'transform': color_mapper}, size=5, name="circle", view=view)
 tab5 = Panel(child=pspd, title="Special Defense")
 
 pspe = figure(x_axis_label="Total", y_axis_label="Speed", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
-pspe.circle(x="total", y="speed", source=datasetCDS, alpha=0.2, hover_alpha=1, color={'field': 'type_1', 'transform': color_mapper}, size=5)
+pspe.circle(x="total", y="speed", source=datasetCDS, alpha=0.2, hover_alpha=1,
+            color={'field': 'type_1', 'transform': color_mapper}, size=5, name="circle", view=view)
 tab6 = Panel(child=pspe, title="Speed")
 
 tabs = Tabs(tabs=[tab1, tab2, tab3, tab4, tab5, tab6])
 
 # Code for the parallell coordinates figure
-
 lineFig = figure(tooltips=TOOLTIPS, active_scroll="wheel_zoom")
 
 mult = [[0] * 6] * len(datasetCDS.data["index"])
-colorRange = [""]*len(datasetCDS.data["index"])
+colorRange = [""] * len(datasetCDS.data["index"])
 
 for i in range(len(datasetCDS.data["index"])):
-      mult[i]=[datasetCDS.data["hp"][i],
-      datasetCDS.data["attack"][i],
-      datasetCDS.data["sp_attack"][i],
-      datasetCDS.data["defense"][i],
-      datasetCDS.data["sp_defense"][i],
-      datasetCDS.data["speed"][i]]
+    mult[i] = [datasetCDS.data["hp"][i],
+               datasetCDS.data["attack"][i],
+               datasetCDS.data["sp_attack"][i],
+               datasetCDS.data["defense"][i],
+               datasetCDS.data["sp_defense"][i],
+               datasetCDS.data["speed"][i]]
 
-      colorRange[i] = color(datasetCDS.data['type_1'][i])
+    colorRange[i] = color(datasetCDS.data['type_1'][i])
 
 dataframe['names'] = [["1", "2", "3", "4", "5", "6"]] * len(datasetCDS.data["index"])
 datasetCDS.data['names'] = dataframe['names']
@@ -144,9 +185,202 @@ dataframe['mult'] = mult
 datasetCDS.data['mult'] = dataframe['mult']
 
 datasetCDS.data['color'] = colorRange
-
-lineFig.multi_line("names", "mult", source=datasetCDS, color="color", alpha=0.1, hover_alpha=1)
-p = gridplot([[tabs, lineFig]], toolbar_location="below")
-
+lineFig.multi_line("names", "mult", source=datasetCDS, color="color", alpha=0.1, hover_alpha=1, view=view, name="circle")
+gp = gridplot([[tabs, lineFig]], toolbar_location="below")
 # show result
-show(p)
+# show(row(button, gp))
+
+genList = [0]*8
+def stuff_0(in_active):
+    if in_active:
+        genList[0]=1
+    else:
+        genList[0]=0
+def stuff_1(in_active):
+    if in_active:
+        genList[1] = 2
+    else:
+        genList[1] = 0
+def stuff_2(in_active):
+    if in_active:
+        genList[2] = 3
+    else:
+        genList[2] = 0
+def stuff_3(in_active):
+    if in_active:
+        genList[3] = 4
+    else:
+        genList[3] = 0
+def stuff_4(in_active):
+    if in_active:
+        genList[4] = 5
+    else:
+        genList[4] = 0
+def stuff_5(in_active):
+    if in_active:
+        genList[5] = 6
+    else:
+        genList[5] = 0
+def stuff_6(in_active):
+    if in_active:
+        genList[6] = 7
+    else:
+        genList[6] = 0
+def stuff_7(in_active):
+    if in_active:
+        genList[7] = 8
+    else:
+        genList[7] = 0
+
+
+gen_list = [stuff_0,stuff_1,stuff_2,stuff_3,stuff_4,stuff_5,stuff_6,stuff_7]
+#https://stackoverflow.com/questions/46899348/bokeh-how-to-loop-through-checkboxbuttongroup?rq=1
+
+def do_stuff(attr, old, new):
+    #print(attr, old, new)
+    last_clicked_ID = list(set(old) ^ set(new))[0]  # [0] since there will always be just one different element at a time
+    last_clicked_button_stuff = gen_list[last_clicked_ID]
+    in_active = last_clicked_ID in new
+    last_clicked_button_stuff(in_active)
+
+    booleans = [True if val in genList else False for val in datasetCDS.data['generation']]
+    php.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
+    patt.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
+    pspa.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
+    pdef.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
+    pspd.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
+    pspe.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
+    lineFig.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
+
+
+GENS = ["1", "2", "3", "4", "5", "6", "7", "8"]
+
+gens = CheckboxButtonGroup(labels=GENS, active=[])
+gens.on_change('active', do_stuff)
+
+
+typeList = [""]*17
+def Fairy(in_active):
+    if in_active:
+        typeList[0]="Fairy"
+    else:
+        typeList[0]=""
+def Steel(in_active):
+    if in_active:
+        typeList[1] = "Steel"
+    else:
+        typeList[1] = ""
+def Dark(in_active):
+    if in_active:
+        typeList[2] = "Dark"
+    else:
+        typeList[2] = ""
+def Dragon(in_active):
+    if in_active:
+        typeList[3] = "Dragon"
+    else:
+        typeList[3] = ""
+def Ghost(in_active):
+    if in_active:
+        typeList[4] = "Ghost"
+    else:
+        typeList[4] = ""
+def Rock(in_active):
+    if in_active:
+        typeList[5] = "Rock"
+    else:
+        typeList[5] = ""
+def Bug(in_active):
+    if in_active:
+        typeList[6] = "Bug"
+    else:
+        typeList[6] = ""
+def Psychic(in_active):
+    if in_active:
+        typeList[7] = "Psychic"
+    else:
+        typeList[7] = ""
+
+def Flying(in_active):
+    if in_active:
+        typeList[8] = "Flying"
+    else:
+        typeList[8] = ""
+def Ground(in_active):
+    if in_active:
+        typeList[9] = "Ground"
+    else:
+        typeList[9] = ""
+def Poison(in_active):
+    if in_active:
+        typeList[10] = "Poison"
+    else:
+        typeList[10] = ""
+def Fighting(in_active):
+    if in_active:
+        typeList[11] = "Fighting"
+    else:
+        typeList[11] = ""
+def Ice(in_active):
+    if in_active:
+        typeList[12] = "Ice"
+    else:
+        typeList[12] = ""
+def Grass(in_active):
+    if in_active:
+        typeList[13] = "Grass"
+    else:
+        typeList[13] = ""
+def Electric(in_active):
+    if in_active:
+        typeList[14] = "Electric"
+    else:
+        typeList[14] = ""
+def Water(in_active):
+    if in_active:
+        typeList[15] = "Water"
+    else:
+        typeList[15] = ""
+def Fire(in_active):
+    if in_active:
+        typeList[16] = "Fire"
+    else:
+        typeList[16] = ""
+def Normal(in_active):
+    if in_active:
+        typeList[17] = "Normal"
+    else:
+        typeList[17] = ""
+
+type_list = [Fairy,Steel,Dark,Dragon,Ghost,Rock,Bug,Psychic,Flying,Ground,Poison,Fighting,Ice,Grass,Electric,Water,Fire,Normal]
+#https://stackoverflow.com/questions/46899348/bokeh-how-to-loop-through-checkboxbuttongroup?rq=1
+
+def do_stuff1(attr, old, new):
+    #print(attr, old, new)
+    last_clicked_ID = list(set(old) ^ set(new))[0]  # [0] since there will always be just one different element at a time
+    last_clicked_button_stuff = type_list[last_clicked_ID]
+    in_active = last_clicked_ID in new
+    last_clicked_button_stuff(in_active)
+
+    booleans = [True if val in typeList else False for val in datasetCDS.data['type_1']]
+    php.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
+    patt.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
+    pspa.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
+    pdef.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
+    pspd.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
+    pspe.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
+    lineFig.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
+
+
+TYPES = ["Fairy", "Steel", "Dark", "Dragon", "Ghost", "Rock", "Bug", "Psychic",
+         "Flying", "Ground", "Poison", "Fighting", "Ice", "Grass", "Electric",
+         "Water", "Fire", "Normal"]
+
+types = CheckboxGroup(labels=TYPES, active=[])
+types.on_change('active', do_stuff1)
+types.width_policy = "fit"
+options = column(gens, types)
+layout = row(options, gp)
+# dataframe.to_excel("test.xlsx")
+curdoc().add_root(layout)
+#show(layout)
