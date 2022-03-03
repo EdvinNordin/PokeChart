@@ -131,32 +131,32 @@ view = CDSView(source=datasetCDS, filters=[])
 
 # Code for the scatter plot, labels and tabs
 php = figure(x_axis_label="Total", y_axis_label="HP", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
-php.circle(x="total", y="hp", source=datasetCDS, alpha=0.2, hover_alpha=1,
+php.circle(x="total", y="hp", source=datasetCDS, alpha=0.3, hover_alpha=1,
            color={'field': 'type_1', 'transform': color_mapper}, size=5, name="circle", view=view)
 tab1 = Panel(child=php, title="HP")
 
 patt = figure(x_axis_label="Total", y_axis_label="Attack", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
-patt.circle(x="total", y="attack", source=datasetCDS, alpha=0.2, hover_alpha=1,
+patt.circle(x="total", y="attack", source=datasetCDS, alpha=0.3, hover_alpha=1,
             color={'field': 'type_1', 'transform': color_mapper}, size=5, name="circle", view=view)
 tab2 = Panel(child=patt, title="Attack")
 
 pspa = figure(x_axis_label="Total", y_axis_label="Special Attack", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
-pspa.circle(x="total", y="sp_attack", source=datasetCDS, alpha=0.2, hover_alpha=1,
+pspa.circle(x="total", y="sp_attack", source=datasetCDS, alpha=0.3, hover_alpha=1,
             color={'field': 'type_1', 'transform': color_mapper}, size=5, name="circle", view=view)
 tab3 = Panel(child=pspa, title="Special Attack")
 
 pdef = figure(x_axis_label="Total", y_axis_label="Defense", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
-pdef.circle(x="total", y="defense", source=datasetCDS, alpha=0.2, hover_alpha=1,
+pdef.circle(x="total", y="defense", source=datasetCDS, alpha=0.3, hover_alpha=1,
             color={'field': 'type_1', 'transform': color_mapper}, size=5, name="circle", view=view)
 tab4 = Panel(child=pdef, title="Defense")
 
 pspd = figure(x_axis_label="Total", y_axis_label="Special Defense", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
-pspd.circle(x="total", y="sp_defense", source=datasetCDS, alpha=0.2, hover_alpha=1,
+pspd.circle(x="total", y="sp_defense", source=datasetCDS, alpha=0.3, hover_alpha=1,
             color={'field': 'type_1', 'transform': color_mapper}, size=5, name="circle", view=view)
 tab5 = Panel(child=pspd, title="Special Defense")
 
 pspe = figure(x_axis_label="Total", y_axis_label="Speed", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
-pspe.circle(x="total", y="speed", source=datasetCDS, alpha=0.2, hover_alpha=1,
+pspe.circle(x="total", y="speed", source=datasetCDS, alpha=0.3, hover_alpha=1,
             color={'field': 'type_1', 'transform': color_mapper}, size=5, name="circle", view=view)
 tab6 = Panel(child=pspe, title="Speed")
 
@@ -185,7 +185,7 @@ dataframe['mult'] = mult
 datasetCDS.data['mult'] = dataframe['mult']
 
 datasetCDS.data['color'] = colorRange
-lineFig.multi_line("names", "mult", source=datasetCDS, color="color", alpha=0.1, hover_alpha=1, view=view, name="circle")
+lineFig.multi_line("names", "mult", source=datasetCDS, color="color", alpha=0.3, hover_alpha=1, view=view, name="circle")
 gp = gridplot([[tabs, lineFig]], toolbar_location="below")
 # show result
 # show(row(button, gp))
@@ -233,38 +233,13 @@ def stuff_7(in_active):
         genList[7] = 0
 
 
-gen_list = [stuff_0,stuff_1,stuff_2,stuff_3,stuff_4,stuff_5,stuff_6,stuff_7]
-#https://stackoverflow.com/questions/46899348/bokeh-how-to-loop-through-checkboxbuttongroup?rq=1
-
-def do_stuff(attr, old, new):
-    #print(attr, old, new)
-    last_clicked_ID = list(set(old) ^ set(new))[0]  # [0] since there will always be just one different element at a time
-    last_clicked_button_stuff = gen_list[last_clicked_ID]
-    in_active = last_clicked_ID in new
-    last_clicked_button_stuff(in_active)
-
-    booleans = [True if val in genList else False for val in datasetCDS.data['generation']]
-    php.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
-    patt.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
-    pspa.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
-    pdef.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
-    pspd.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
-    pspe.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
-    lineFig.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
-
-
-GENS = ["1", "2", "3", "4", "5", "6", "7", "8"]
-
-gens = CheckboxButtonGroup(labels=GENS, active=[])
-gens.on_change('active', do_stuff)
-
 
 typeList = [""]*17
 def Fairy(in_active):
     if in_active:
-        typeList[0]="Fairy"
+        typeList[8]="Fairy"
     else:
-        typeList[0]=""
+        typeList[8]=""
 def Steel(in_active):
     if in_active:
         typeList[1] = "Steel"
@@ -352,6 +327,46 @@ def Normal(in_active):
     else:
         typeList[17] = ""
 
+
+gen_list = [stuff_0,stuff_1,stuff_2,stuff_3,stuff_4,stuff_5,stuff_6,stuff_7]
+#https://stackoverflow.com/questions/46899348/bokeh-how-to-loop-through-checkboxbuttongroup?rq=1
+
+booleans = [False]*len(datasetCDS.data["index"])
+
+def do_stuff(attr, old, new):
+    #print(attr, old, new)
+
+    last_clicked_ID = list(set(old) ^ set(new))[0]  # [0] since there will always be just one different element at a time
+    last_clicked_button_stuff = gen_list[last_clicked_ID]
+    in_active = last_clicked_ID in new
+    last_clicked_button_stuff(in_active)
+    for i in range(len(datasetCDS.data["index"])):
+        if datasetCDS.data['generation'][i] in genList and (datasetCDS.data['type_1'][i] in typeList or datasetCDS.data['type_2'][i] in typeList):
+            booleans[i] = True
+        elif genList == [0]*8 and (datasetCDS.data['type_1'][i] in typeList or datasetCDS.data['type_2'][i] in typeList):
+            booleans[i] = True
+        elif typeList == [""]*17 and datasetCDS.data['generation'][i] in genList:
+            booleans[i] = True
+        else:
+            booleans[i] = False
+
+
+    php.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
+    patt.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
+    pspa.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
+    pdef.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
+    pspd.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
+    pspe.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
+    lineFig.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
+
+
+
+GENS = ["1", "2", "3", "4", "5", "6", "7", "8"]
+
+gens = CheckboxButtonGroup(labels=GENS, active=[])
+gens.on_change('active', do_stuff)
+
+
 type_list = [Fairy,Steel,Dark,Dragon,Ghost,Rock,Bug,Psychic,Flying,Ground,Poison,Fighting,Ice,Grass,Electric,Water,Fire,Normal]
 #https://stackoverflow.com/questions/46899348/bokeh-how-to-loop-through-checkboxbuttongroup?rq=1
 
@@ -362,7 +377,16 @@ def do_stuff1(attr, old, new):
     in_active = last_clicked_ID in new
     last_clicked_button_stuff(in_active)
 
-    booleans = [True if val in typeList else False for val in datasetCDS.data['type_1']]
+    for i in range(len(datasetCDS.data["index"])):
+        if datasetCDS.data['generation'][i] in genList and (datasetCDS.data['type_1'][i] in typeList or datasetCDS.data['type_2'][i] in typeList):
+            booleans[i] = True
+        elif genList == [0]*8 and (datasetCDS.data['type_1'][i] in typeList or datasetCDS.data['type_2'][i] in typeList):
+            booleans[i] = True
+        elif typeList == [""]*17 and datasetCDS.data['generation'][i] in genList:
+            booleans[i] = True
+        else:
+            booleans[i] = False
+    print(typeList)
     php.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
     patt.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
     pspa.select(name='circle')[0].view = CDSView(source=datasetCDS, filters=[BooleanFilter(booleans)])
@@ -378,7 +402,6 @@ TYPES = ["Fairy", "Steel", "Dark", "Dragon", "Ghost", "Rock", "Bug", "Psychic",
 
 types = CheckboxGroup(labels=TYPES, active=[])
 types.on_change('active', do_stuff1)
-types.width_policy = "fit"
 options = column(gens, types)
 layout = row(options, gp)
 # dataframe.to_excel("test.xlsx")
