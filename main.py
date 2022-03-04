@@ -2,16 +2,12 @@
 import pandas as pd
 
 from bokeh.server.server import Server
-from bokeh.application import Application
-from bokeh.application.handlers.function import FunctionHandler
-from bokeh import events
 from bokeh.io import curdoc
 from bokeh.embed import json_item
-from bokeh.layouts import layout, gridplot, row, widgetbox, column, grid
-from bokeh.models import CustomJS, HoverTool, ColumnDataSource, CategoricalColorMapper, Slider, CheckboxButtonGroup, \
-    CDSView, GroupFilter, IndexFilter, BooleanFilter, CheckboxGroup
+from bokeh.layouts import layout, gridplot, row, column
+from bokeh.models import ColumnDataSource, CategoricalColorMapper, CheckboxButtonGroup, CDSView, BooleanFilter
 from bokeh.plotting import figure, show
-from bokeh.models.widgets import Panel, Tabs, Select, Button, RadioButtonGroup
+from bokeh.models.widgets import Panel, Tabs, Button, RadioButtonGroup
 from bokeh.events import ButtonClick
 
 # Load in database with pandas
@@ -80,7 +76,7 @@ datasetCDS.data['speedSize'] = dataframe['speed'] / sizeCoeff
 
 # HTML and CSS to the hovering function
 TOOLTIPS = """
-    <div style="width: 100px;">
+    <div style="width: 150px;">
         <div style="display: grid;">
             <span style="font-size: 17px; font-weight: bold;">@name</span></div>
             <div style="display: grid;"><span style="font-size: 14px; font-weight: bold;">Pokédex: @pokedex_number</span></div>
