@@ -1,9 +1,6 @@
 # Imports pandas
 import pandas as pd
 
-# Imports bokeh
-from tornado.ioloop import IOLoop
-
 from bokeh.server.server import Server
 from bokeh.application import Application
 from bokeh.application.handlers.function import FunctionHandler
@@ -234,7 +231,7 @@ def stuff_7(in_active):
 
 
 
-typeList = [""]*17
+typeList = [""]*18
 def Fairy(in_active):
     if in_active:
         typeList[8]="Fairy"
@@ -371,19 +368,19 @@ def do_stuff(attr, old, new):
         elif genList == [0]*8 and (datasetCDS.data['type_1'][i] in typeList or datasetCDS.data['type_2'][i] in typeList) and datasetCDS.data['status'][i] in statusList:
             booleans[i] = True
         #3
-        elif datasetCDS.data['generation'][i] in genList and typeList == [""]*17 and datasetCDS.data['status'][i] in statusList:
+        elif datasetCDS.data['generation'][i] in genList and typeList == [""]*18 and datasetCDS.data['status'][i] in statusList:
             booleans[i] = True
         #4
         elif datasetCDS.data['generation'][i] in genList and (datasetCDS.data['type_1'][i] in typeList or datasetCDS.data['type_2'][i] in typeList) and statusList == [""]*4:
             booleans[i] = True
         #5
-        elif genList == [0]*8 and typeList == [""]*17  and datasetCDS.data['status'][i] in statusList:
+        elif genList == [0]*8 and typeList == [""]*18  and datasetCDS.data['status'][i] in statusList:
             booleans[i] = True
         #6
         elif genList == [0]*8  and (datasetCDS.data['type_1'][i] in typeList or datasetCDS.data['type_2'][i] in typeList) and statusList == [""]*4:
             booleans[i] = True
         #7
-        elif datasetCDS.data['generation'][i] in genList and typeList == [""]*17 and statusList == [""]*4:
+        elif datasetCDS.data['generation'][i] in genList and typeList == [""]*18 and statusList == [""]*4:
             booleans[i] = True
         #8
         else:
@@ -424,19 +421,19 @@ def do_stuff1(attr, old, new):
         elif genList == [0]*8 and (datasetCDS.data['type_1'][i] in typeList or datasetCDS.data['type_2'][i] in typeList) and datasetCDS.data['status'][i] in statusList:
             booleans[i] = True
         #3
-        elif datasetCDS.data['generation'][i] in genList and typeList == [""]*17 and datasetCDS.data['status'][i] in statusList:
+        elif datasetCDS.data['generation'][i] in genList and typeList == [""]*18 and datasetCDS.data['status'][i] in statusList:
             booleans[i] = True
         #4
         elif datasetCDS.data['generation'][i] in genList and (datasetCDS.data['type_1'][i] in typeList or datasetCDS.data['type_2'][i] in typeList) and statusList == [""]*4:
             booleans[i] = True
         #5
-        elif genList == [0]*8 and typeList == [""]*17  and datasetCDS.data['status'][i] in statusList:
+        elif genList == [0]*8 and typeList == [""]*18 and datasetCDS.data['status'][i] in statusList:
             booleans[i] = True
         #6
         elif genList == [0]*8  and (datasetCDS.data['type_1'][i] in typeList or datasetCDS.data['type_2'][i] in typeList) and statusList == [""]*4:
             booleans[i] = True
         #7
-        elif datasetCDS.data['generation'][i] in genList and typeList == [""]*17 and statusList == [""]*4:
+        elif datasetCDS.data['generation'][i] in genList and typeList == [""]*18 and statusList == [""]*4:
             booleans[i] = True
         #8
         else:
@@ -476,19 +473,19 @@ def do_stuff2(attr, old, new):
         elif genList == [0]*8 and (datasetCDS.data['type_1'][i] in typeList or datasetCDS.data['type_2'][i] in typeList) and datasetCDS.data['status'][i] in statusList:
             booleans[i] = True
         #3
-        elif datasetCDS.data['generation'][i] in genList and typeList == [""]*17 and datasetCDS.data['status'][i] in statusList:
+        elif datasetCDS.data['generation'][i] in genList and typeList == [""]*18 and datasetCDS.data['status'][i] in statusList:
             booleans[i] = True
         #4
         elif datasetCDS.data['generation'][i] in genList and (datasetCDS.data['type_1'][i] in typeList or datasetCDS.data['type_2'][i] in typeList) and statusList == [""]*4:
             booleans[i] = True
         #5
-        elif genList == [0]*8 and typeList == [""]*17 and datasetCDS.data['status'][i] in statusList:
+        elif genList == [0]*8 and typeList == [""]*18 and datasetCDS.data['status'][i] in statusList:
             booleans[i] = True
         #6
         elif genList == [0]*8  and (datasetCDS.data['type_1'][i] in typeList or datasetCDS.data['type_2'][i] in typeList) and statusList == [""]*4:
             booleans[i] = True
         #7
-        elif datasetCDS.data['generation'][i] in genList and typeList == [""]*17 and statusList == [""]*4:
+        elif datasetCDS.data['generation'][i] in genList and typeList == [""]*18 and statusList == [""]*4:
             booleans[i] = True
         #8
         else:
@@ -505,9 +502,9 @@ def do_stuff2(attr, old, new):
 
 STATUS = ["Normal", "Sub Legendary", "Legendary", "Mythical"]
 
-status = CheckboxButtonGroup(labels=STATUS, active=[], width=200)
+status = CheckboxButtonGroup(labels=STATUS, active=[])
 status.on_change('active', do_stuff2)
-lower = row(gens,status, width=500)
+lower = row(gens,status)
 options = column(types,lower)
 layout = column(gp,options)
 # dataframe.to_excel("test.xlsx")
