@@ -5,7 +5,7 @@ from bokeh.server.server import Server
 from bokeh.io import curdoc
 from bokeh.embed import json_item
 from bokeh.layouts import layout, gridplot, row, column
-from bokeh.models import ColumnDataSource, CategoricalColorMapper, CheckboxButtonGroup, CDSView, BooleanFilter
+from bokeh.models import ColumnDataSource, CategoricalColorMapper, CheckboxButtonGroup, CDSView, BooleanFilter, Div
 from bokeh.plotting import figure, show
 from bokeh.models.widgets import Panel, Tabs, Button, RadioButtonGroup
 from bokeh.events import ButtonClick
@@ -42,7 +42,7 @@ def image(url):
     except urllib.request.HTTPError:
         return False
 
-
+# uncomment "if image(url):" and tab line below it to run the url checker to make sure every pokemon has an image
 urlvar = [""] * len(datasetCDS.data["index"])
 datasetCDS.data["url"] = urlvar
 for x in range(len(datasetCDS.data["index"])):
@@ -497,11 +497,13 @@ def do_stuff2(attr, old, new):
 
 
 STATUS = ["Normal", "Sub Legendary", "Legendary", "Mythical"]
-
+typeDiv = Div(text="<b>Types</b>")
+genDiv = Div(text="<b>Generation</b>")
+statusDiv = Div(text="<b>Status</b>")
 status = CheckboxButtonGroup(labels=STATUS, active=[])
 status.on_change('active', do_stuff2)
-lower = row(gens,status)
-options = column(types,lower)
+lower= row(column(genDiv,gens),column(statusDiv,status))
+options = column(typeDiv,types,lower)
 layout = column(gp,options)
 # dataframe.to_excel("test.xlsx")
 curdoc().add_root(layout)
