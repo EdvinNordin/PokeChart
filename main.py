@@ -5,7 +5,7 @@ from bokeh.server.server import Server
 from bokeh.io import curdoc
 from bokeh.embed import json_item
 from bokeh.layouts import layout, gridplot, row, column
-from bokeh.models import ColumnDataSource, CategoricalColorMapper, CheckboxButtonGroup, CDSView, BooleanFilter, Div
+from bokeh.models import ColumnDataSource, CategoricalColorMapper, CheckboxButtonGroup, CDSView, BooleanFilter, Div, BoxSelectTool, LassoSelectTool
 from bokeh.plotting import figure, show
 from bokeh.models.widgets import Panel, Tabs, Button, RadioButtonGroup
 from bokeh.events import ButtonClick
@@ -118,37 +118,37 @@ def color(type):
             return colors[j]
 
 
-
+options = dict(tools="pan,wheel_zoom,lasso_select,box_select,reset")
 
 view = CDSView(source=datasetCDS, filters=[])
-
+tools = [LassoSelectTool()]
 # Code for the scatter plot, labels and tabs
-php = figure(x_axis_label="Total", y_axis_label="HP", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
+php = figure(x_axis_label="Total", y_axis_label="HP", tooltips=TOOLTIPS, active_scroll="wheel_zoom", **options)
 php.circle(x="total", y="hp", source=datasetCDS, alpha=0.3, hover_alpha=1,
            color={'field': 'type_1', 'transform': color_mapper}, size=5, name="circle", view=view)
 tab1 = Panel(child=php, title="HP")
 
-patt = figure(x_axis_label="Total", y_axis_label="Attack", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
+patt = figure(x_axis_label="Total", y_axis_label="Attack", tooltips=TOOLTIPS, active_scroll="wheel_zoom", **options)
 patt.circle(x="total", y="attack", source=datasetCDS, alpha=0.3, hover_alpha=1,
             color={'field': 'type_1', 'transform': color_mapper}, size=5, name="circle", view=view)
 tab2 = Panel(child=patt, title="Attack")
 
-pspa = figure(x_axis_label="Total", y_axis_label="Special Attack", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
+pspa = figure(x_axis_label="Total", y_axis_label="Special Attack", tooltips=TOOLTIPS, active_scroll="wheel_zoom", **options)
 pspa.circle(x="total", y="sp_attack", source=datasetCDS, alpha=0.3, hover_alpha=1,
             color={'field': 'type_1', 'transform': color_mapper}, size=5, name="circle", view=view)
 tab3 = Panel(child=pspa, title="Special Attack")
 
-pdef = figure(x_axis_label="Total", y_axis_label="Defense", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
+pdef = figure(x_axis_label="Total", y_axis_label="Defense", tooltips=TOOLTIPS, active_scroll="wheel_zoom", **options)
 pdef.circle(x="total", y="defense", source=datasetCDS, alpha=0.3, hover_alpha=1,
             color={'field': 'type_1', 'transform': color_mapper}, size=5, name="circle", view=view)
 tab4 = Panel(child=pdef, title="Defense")
 
-pspd = figure(x_axis_label="Total", y_axis_label="Special Defense", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
+pspd = figure(x_axis_label="Total", y_axis_label="Special Defense", tooltips=TOOLTIPS, active_scroll="wheel_zoom", **options)
 pspd.circle(x="total", y="sp_defense", source=datasetCDS, alpha=0.3, hover_alpha=1,
             color={'field': 'type_1', 'transform': color_mapper}, size=5, name="circle", view=view)
 tab5 = Panel(child=pspd, title="Special Defense")
 
-pspe = figure(x_axis_label="Total", y_axis_label="Speed", tooltips=TOOLTIPS, active_scroll="wheel_zoom")
+pspe = figure(x_axis_label="Total", y_axis_label="Speed", tooltips=TOOLTIPS, active_scroll="wheel_zoom", **options)
 pspe.circle(x="total", y="speed", source=datasetCDS, alpha=0.3, hover_alpha=1,
             color={'field': 'type_1', 'transform': color_mapper}, size=5, name="circle", view=view)
 tab6 = Panel(child=pspe, title="Speed")
@@ -156,7 +156,7 @@ tab6 = Panel(child=pspe, title="Speed")
 tabs = Tabs(tabs=[tab1, tab2, tab3, tab4, tab5, tab6])
 
 # Code for the parallell coordinates figure
-lineFig = figure(tooltips=TOOLTIPS, active_scroll="wheel_zoom")
+lineFig = figure(tooltips=TOOLTIPS, active_scroll="wheel_zoom", **options)
 
 mult = [[0] * 6] * len(datasetCDS.data["index"])
 colorRange = [""] * len(datasetCDS.data["index"])
