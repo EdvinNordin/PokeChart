@@ -1,6 +1,6 @@
 # Imports pandas
 import pandas as pd
-
+import urllib.request
 from bokeh.server.server import Server
 from bokeh.io import curdoc
 from bokeh.embed import json_item
@@ -52,18 +52,18 @@ for x in range(len(datasetCDS.data["index"])):
 
     if datasetCDS.data['pokedex_number'][x] == datasetCDS.data['pokedex_number'][x - 1]:
         url = 'https://assets.pokemon.com/assets/cms2/img/pokedex/detail/' + datasetCDS.data['formPN'][x] + '_f2.png'
-        # if image(url):
-        datasetCDS.data['url'][x] = url
+        if image(url):
+            datasetCDS.data['url'][x] = url
 
     if datasetCDS.data['pokedex_number'][x] == datasetCDS.data['pokedex_number'][x - 2]:
         url = 'https://assets.pokemon.com/assets/cms2/img/pokedex/detail/' + datasetCDS.data['formPN'][x] + '_f3.png'
-        # if image(url):
-        datasetCDS.data['url'][x] = url
+        if image(url):
+            datasetCDS.data['url'][x] = url
 
     if datasetCDS.data['pokedex_number'][x] == datasetCDS.data['pokedex_number'][x - 3]:
         url = 'https://assets.pokemon.com/assets/cms2/img/pokedex/detail/' + datasetCDS.data['formPN'][x] + '_f4.png'
-        # if image(url):
-        datasetCDS.data['url'][x] = url
+        if image(url):
+            datasetCDS.data['url'][x] = url
 
 # Reads the data from each stat from the database and scales them to a coefficent
 sizeCoeff = 2
