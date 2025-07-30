@@ -392,7 +392,9 @@ lower = row(column(genDiv, gens), column(statusDiv, status))
 options_col = column(typeDiv, types, lower)
 main_layout = column(gp, options_col)
 
-curdoc().add_root(main_layout)
+doc = curdoc()
+doc.title = 'PokeChart'
+doc.add_root(main_layout)
 
 # in terminal: bokeh serve --show main.py
 #on file directory to be able to use the filtering functions
